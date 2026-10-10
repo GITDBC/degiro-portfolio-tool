@@ -1,0 +1,18 @@
+name: Obtain Version
+description: Get Package Version
+
+outputs:
+  version:
+    description: "Package Version"
+    value: ${{ steps.get_version.outputs.version }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get Package Version
+      id: get_version
+      shell: bash
+      run: |
+        VERSION=$(uv version --short)
+        echo "version=v$VERSION" >> $GITHUB_OUTPUT
+        echo "Package Version: v$VERSION"

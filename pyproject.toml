@@ -1,0 +1,80 @@
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[project]
+name = "degiro-tools"
+version = "0.5.3"
+description = "Extracción y cálculo de datos de cartera y fiscalidad IRPF (España) desde extractos Degiro."
+readme = "README.md"
+requires-python = "==3.11.*"
+dependencies = [
+    "rich==15.0.0",
+    "polars==1.44.2",
+    "yfinance==1.7.0",
+    "openpyxl==3.1.5",
+    "fastexcel==0.21.0",
+    "defusedxml==0.7.1",
+]
+
+[tool.uv]
+default-groups = "all"
+cache-keys = [{ file = "pyproject.toml" }, { git = { commit = true } }]
+
+[tool.uv.build-backend]
+module-name = "degiro_tools"
+module-root = ""
+
+[dependency-groups]
+pipeline = [
+    "complexipy==8.0.1",
+    "mypy==2.3.1",
+    "pytest==9.1.1",
+    "ruff==0.16.9",
+]
+
+[project.scripts]
+degiro-tools = "degiro_tools.cli:main"
+
+[tool.ruff]
+line-length = 88
+indent-width = 4
+extend-exclude = [".venv", ".uv-cache"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "PL", "UP", "N", "B", "I"]
+ignore = [
+    "PLC0415",
+    "PLR0912",
+    "PLR0915",
+    "PLR2004",
+]
+
+[tool.ruff.format]
+docstring-code-format = true
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.isort]
+known-first-party = ["degiro_tools"]
+section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+combine-as-imports = true
+split-on-trailing-comma = true
+
+[tool.ruff.lint.isort.import-heading]
+standard-library = "Standard libraries"
+third-party = "3pps"
+first-party = "Own modules"
+local-folder = "Own modules"
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+exclude = [
+    "^(build|dist|venv)",
+    ".venv/",
+    ".uv-cache/"
+]
+cache_dir = "/dev/null"

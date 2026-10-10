@@ -1,0 +1,28 @@
+# Datos personales (nunca formatear ni tocar)
+holdings/
+holdings.json
+*.xlsx
+*.xls
+*.csv
+
+# Locks y dependencias
+uv.lock
+node_modules/
+package-lock.json
+
+# Entornos y cachés
+.venv/
+*venv/
+.uv-cache/
+**/__pycache__/
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.complexipy_cache/
+
+# Cobertura / logs / builds
+coverage.xml
+htmlcov/
+logs/
+*build/
+*dist/

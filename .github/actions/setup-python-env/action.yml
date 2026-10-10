@@ -1,0 +1,39 @@
+name: Setup Python Environment and uv
+description: Setup Python, uv, and dependencies for the project
+
+inputs:
+  src-python-version:
+    description: "Python version to set up for the project"
+    required: true
+
+  uv-group:
+    description: "Dependency group to install"
+    required: false
+
+  uv-extra:
+    description: "Dependency extra to install"
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Install uv and set the Python version
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+      with:
+        python-version: ${{ inputs.src-python-version }}
+        enable-cache: true
+
+    - name: Install dependencies with uv
+      shell: bash
+      env:
+        UV_GROUP: ${{ inputs.uv-group }}
+        UV_EXTRA: ${{ inputs.uv-extra }}
+      run: |
+        ARGS=""
+        if [ "$UV_EXTRA" = "--all-extras" ] || [ -z "$UV_GROUP$UV_EXTRA" ]; then
+          ARGS="--all-extras"
+        else
+          [ -n "$UV_GROUP" ] && ARGS="$ARGS --group $UV_GROUP"
+          [ -n "$UV_EXTRA" ] && ARGS="$ARGS --extra $UV_EXTRA"
+        fi
+        uv sync $ARGS

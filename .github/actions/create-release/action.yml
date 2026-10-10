@@ -1,0 +1,49 @@
+name: Create Release
+description: Creates a GitHub Release from Provided Version
+
+inputs:
+  version:
+    description: "Package Version"
+    required: true
+  token:
+    description: "GitHub Token for Authentication"
+    required: true
+
+outputs:
+  version:
+    description: "The Version Released"
+    value: ${{ inputs.version }}
+  created:
+    description: "New Release Created"
+    value: ${{ steps.check_release.outputs.exists == 'false' }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check Release
+      id: check_release
+      shell: bash
+      run: |
+        if gh release view "${{ inputs.version }}" >/dev/null 2>&1; then
+          echo "exists=true" >> $GITHUB_OUTPUT
+        else
+          echo "exists=false" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+
+    - name: Create Release
+      if: steps.check_release.outputs.exists == 'false'
+      shell: bash
+      run: |
+        LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+        RANGE="${LAST_TAG:+$LAST_TAG..HEAD}"
+        COMMITS=$(git log ${RANGE:---max-count=10} --pretty=format:"- %s" --no-merges)
+
+        gh release create "${{ inputs.version }}" \
+          --title "${{ inputs.version }}" \
+          --notes "## Changes
+
+        $COMMITS"
+      env:
+        GH_TOKEN: ${{ inputs.token }}

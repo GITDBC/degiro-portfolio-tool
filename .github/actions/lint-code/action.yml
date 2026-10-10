@@ -1,0 +1,23 @@
+name: Lint Code
+description: Lint and Format Check Python Code
+
+inputs:
+  src-project-folder:
+    description: "Project Directory"
+    required: true
+    default: "src"
+
+runs:
+  using: composite
+  steps:
+    - name: Lint with Ruff
+      shell: bash
+      run: uv run ruff check ${{ inputs.src-project-folder }}/
+
+    - name: Check Cognitive Complexity
+      shell: bash
+      run: uv run complexipy -f ${{ inputs.src-project-folder }}/
+
+    - name: Run Mypy Type Checker
+      shell: bash
+      run: uv run mypy ${{ inputs.src-project-folder }}/
